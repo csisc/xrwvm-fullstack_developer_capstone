@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
@@ -43,7 +42,13 @@ def registration(request):
     username_exist = User.objects.filter(username=username).exists()
 
     if not username_exist:
-        user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password, email=email)
+        user = User.objects.create_user(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+            email=email,
+        )
         login(request, user)
         return JsonResponse({"userName": username, "status": "Authenticated"})
     return JsonResponse({"userName": username, "error": "Already Registered"})
@@ -53,7 +58,10 @@ def get_cars(request):
     if not CarMake.objects.exists():
         initiate()
     car_models = CarModel.objects.select_related('car_make')
-    cars = [{"CarModel": car_model.name, "CarMake": car_model.car_make.name} for car_model in car_models]
+    cars = [
+        {"CarModel": car_model.name, "CarMake": car_model.car_make.name}
+        for car_model in car_models
+    ]
     return JsonResponse({"CarModels": cars})
 
 
@@ -68,7 +76,9 @@ def get_dealer_reviews(request, dealer_id):
         endpoint = f"/fetchReviews/dealer/{dealer_id}"
         reviews = get_request(endpoint)
         for review_detail in reviews:
-            sentiment_response = analyze_review_sentiments(review_detail.get('review', ''))
+            sentiment_response = analyze_review_sentiments(
+                review_detail.get('review', '')
+            )
             review_detail['sentiment'] = sentiment_response.get('sentiment', '')
         return JsonResponse({"status": 200, "reviews": reviews})
     return JsonResponse({"status": 400, "message": "Bad Request"})
