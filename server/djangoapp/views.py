@@ -50,8 +50,12 @@ def registration(request):
             email=email,
         )
         login(request, user)
-        return JsonResponse({"userName": username, "status": "Authenticated"})
-    return JsonResponse({"userName": username, "error": "Already Registered"})
+        return JsonResponse(
+            {"userName": username, "status": "Authenticated"}
+        )
+    return JsonResponse(
+        {"userName": username, "error": "Already Registered"}
+    )
 
 
 def get_cars(request):
@@ -66,7 +70,9 @@ def get_cars(request):
 
 
 def get_dealerships(request, state="All"):
-    endpoint = f"/fetchDealers/{state}" if state != "All" else "/fetchDealers"
+    endpoint = (
+        f"/fetchDealers/{state}" if state != "All" else "/fetchDealers"
+    )
     dealerships = get_request(endpoint)
     return JsonResponse({"status": 200, "dealers": dealerships})
 
@@ -100,5 +106,7 @@ def add_review(request):
             return JsonResponse({"status": 200})
         except Exception as e:
             logger.error(f"Error in posting review: {e}")
-            return JsonResponse({"status": 401, "message": "Error in posting review"})
+            return JsonResponse(
+                {"status": 401, "message": "Error in posting review"}
+            )
     return JsonResponse({"status": 403, "message": "Unauthorized"})
